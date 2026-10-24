@@ -26,6 +26,15 @@ uv run bb-convert                  # one Parquet file per archive into data/parq
 uv run pytest
 ```
 
+## Reading
+
+- **Meeker, Escobar & Pascual, *Statistical Methods for Reliability Data*** (2nd ed., Wiley, 2021). Main reference: Weibull models, censoring and truncation, field data, failure prediction, Bayesian reliability. Phases 1–4.
+- **McElreath, *Statistical Rethinking*** (2nd ed., CRC, 2020). Bayesian workflow, diagnostics and partial pooling; code ported to PyMC in [pymc-resources](https://github.com/pymc-devs/pymc-resources). Phases 2–3.
+- **Klein & Moeschberger, *Survival Analysis: Techniques for Censored and Truncated Data*** (2nd ed., Springer, 2003). Left truncation and Kaplan–Meier risk sets. Phase 1.
+- **Gelman et al., *Bayesian Data Analysis*** (3rd ed., CRC, 2013; [free PDF](https://sites.stat.columbia.edu/gelman/book/)). Hierarchical models and model checking. Phase 3.
+- **Hamada, Wilson, Reese & Martz, *Bayesian Reliability*** (Springer, 2008). Bayesian methods applied to reliability. Phases 2–3.
+- **Molnar, *Interpretable Machine Learning*** ([free online](https://christophm.github.io/interpretable-ml-book/)). SHAP. Phase 5.
+
 ## Data
 
 Backblaze publishes the data free of charge. Per their terms: cite Backblaze as the source, accept that you are solely responsible for how you use the data, and do not sell the data itself. Raw data is not committed to this repo.
