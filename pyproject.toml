@@ -1,0 +1,36 @@
+[project]
+name = "drive-reliability"
+version = "0.1.0"
+description = "Fleet reliability modeling and failure forecasting on Backblaze hard drive data"
+readme = "README.md"
+authors = [
+    { name = "Sam Mohan", email = "sam.mohan211@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "duckdb>=2.0.0",
+    "httpx>=0.28.1",
+    "numpy>=2.5.4",
+    "pandas>=3.1.0",
+    "pyarrow>=26.0.0",
+    "scipy>=1.18.1",
+]
+
+[project.scripts]
+bb-download = "drive_reliability.download:main"
+
+[build-system]
+requires = ["uv_build>=0.8.13,<0.9.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.17.2",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

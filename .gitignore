@@ -1,0 +1,28 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# Data and model artifacts (large; rebuilt from scripts)
+data/
+*.duckdb
+*.parquet
+*.nc
+*.joblib
+
+# Environment
+.env
+
+# Caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/
