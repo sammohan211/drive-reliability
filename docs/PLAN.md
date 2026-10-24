@@ -10,7 +10,7 @@ Started 2026-10-24. Each phase ends with something that runs and is tested.
 - [ ] Convert to Parquet (`bb-convert`), one archive at a time: extract CSVs to a temp folder, write one Parquet file per archive with all columns, delete the CSVs. Peak temp use ~13 GB; expected total on disk ~50–65 GB (zips + Parquet)
 - [ ] Handle column drift: SMART columns and fields like `datacenter` were added over time. Each Parquet file keeps its own columns; DuckDB aligns them by name (`union_by_name`)
 - [ ] Build a **drive lifecycle table**, one row per serial number: model, capacity, first/last seen, entry age (SMART 9, power-on hours, at first sighting), failed flag, age at failure or at censoring
-- [ ] Data-quality audit: serials that disappear without failing, failures followed by reappearance, power-on-hours resets or implausible values, drive models with too few drives
+- [ ] Data-quality audit. Known so far: `2018-02-25.csv` and `2019-06-17.csv` were re-saved in Excel before publication (M/D/YY dates; `capacity_bytes` on 2018-02-25 and some SMART raw counters, mostly smart_242, rounded to 6 significant digits; 9 failures recorded on those days, kept). The 2019-06-17 file also holds one row dated 2019-06-15: the failure record of `ZCH0CJC3` (last seen 2019-06-16, never after), with power-on hours that don't match its other days. Treat it as failing on 2019-06-17. Take per-drive capacity from undamaged days. Also check: serials that disappear without failing, failures followed by reappearance, power-on-hours resets or implausible values, drive models with too few drives
 - **Gate:** list of drive models with enough data (e.g. ≥ 1,000 drives and ≥ 20 failures). Others enter only through pooling
 
 ## Phase 1: Baselines

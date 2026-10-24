@@ -105,6 +105,40 @@ def test_convert_fails_loudly_on_bad_value(tmp_path):
     assert not (tmp_path / "tmp" / "data_Q1_2024").exists()
 
 
+def test_convert_accepts_excel_resaved_day(tmp_path):
+    # As in 2018-02-25.csv: \r line endings, M/D/YY dates, E-notation numbers
+    excel = "\r".join(
+        [
+            HEADER,
+            "2/25/18,S1,ST4000DM000,4.00079E+12,0,98,1.23457E+11",
+            "12/5/18,S2,ST4000DM000,4.00079E+12,1,100,15760",
+        ]
+    )
+    archive = make_archive(
+        tmp_path / "data_Q1_2018.zip", {"2018-02-24.csv": DAY1, "2018-02-25.csv": excel}
+    )
+    dest = run(archive, tmp_path)
+    rows = duckdb.sql(
+        f"SELECT date::VARCHAR, serial_number, capacity_bytes, failure, smart_9_raw FROM '{dest}'"
+        " ORDER BY date, serial_number"
+    ).fetchall()
+    assert rows == [
+        ("2018-02-25", "S1", 4000790000000, 0, 123457000000.0),
+        ("2018-12-05", "S2", 4000790000000, 1, 15760.0),
+        ("2024-01-01", "S1", 4000787030016, 0, 15736.0),
+    ]
+
+
+@pytest.mark.parametrize("value", ["25/2/2018", "Feb 25 2018", "2018-13-01"])
+def test_convert_still_rejects_other_dates(tmp_path, value):
+    bad = make_archive(
+        tmp_path / "data_Q1_2018.zip",
+        {"2018-02-25.csv": f"{HEADER}\n{value},S1,M,4000787030016,0,98,1\n"},
+    )
+    with pytest.raises(duckdb.ConversionException):
+        run(bad, tmp_path)
+
+
 def test_convert_rejects_missing_columns(tmp_path):
     bad = make_archive(
         tmp_path / "data_Q1_2024.zip", {"2024-01-01.csv": "date,model\n2024-01-01,M\n"}

@@ -52,6 +52,32 @@ def column_type(name: str) -> str:
     return "DOUBLE" if name.startswith("smart_") else "VARCHAR"
 
 
+def column_expr(name: str) -> str:
+    """SQL casting one text column to its type.
+
+    A few daily files (e.g. 2018-02-25, 2019-06-17) were re-saved in Excel before
+    publication: dates became M/D/YY and large numbers E-notation, rounded to 6
+    significant digits. Both forms are accepted; DOUBLE columns already parse
+    E-notation. Any other unparseable value still fails the plain CAST at the end.
+    """
+    col, typ = f'"{name}"', column_type(name)
+    if typ == "DATE":
+        # Match the M/D/YY shape explicitly: a plain CAST reads '12/5/18' as year 12
+        expr = (
+            f"CASE WHEN regexp_full_match({col}, '\\d{{1,2}}/\\d{{1,2}}/\\d{{2}}')"
+            f" THEN CAST(STRPTIME({col}, '%m/%d/%y') AS DATE)"
+            f" ELSE CAST({col} AS DATE) END"
+        )
+    elif typ == "BIGINT":
+        expr = (
+            f"CASE WHEN {col} ILIKE '%e+%' THEN CAST(CAST({col} AS DOUBLE) AS BIGINT)"
+            f" ELSE CAST({col} AS BIGINT) END"
+        )
+    else:
+        expr = f"CAST({col} AS {typ})"
+    return f"{expr} AS {col}"
+
+
 def csvs_to_parquet(
     csvs: list[Path], out: Path, temp_dir: Path = TMP_DIR / "duckdb", memory_limit: str = "6GB"
 ) -> int:
@@ -70,7 +96,7 @@ def csvs_to_parquet(
         missing = set(FIXED_TYPES) - set(raw.columns)
         if missing:
             raise ValueError(f"missing expected columns: {sorted(missing)}")
-        select = ", ".join(f'CAST("{c}" AS {column_type(c)}) AS "{c}"' for c in raw.columns)
+        select = ", ".join(column_expr(c) for c in raw.columns)
         raw.select(select).write_parquet(str(out), compression="zstd")
         return con.execute("SELECT count(*) FROM read_parquet(?)", [str(out)]).fetchone()[0]
     finally:
