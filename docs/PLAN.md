@@ -4,9 +4,11 @@ Started 2026-10-24. Each phase ends with something that runs and is tested.
 
 ## Phase 0: Data ingestion and audit
 
-- [x] Downloader for quarterly archives (`bb-download`)
-- [ ] Choose the window (proposed: 2023Q1–2026Q2, ~14 GB zipped). Older quarters only if a drive model needs more history
-- [ ] Load daily CSVs into DuckDB / Parquet. Handle column drift: SMART columns added over time, schema changes between quarters
+- [x] Downloader (`bb-download`): yearly archives for 2013–2015, quarterly from 2016; resumes interrupted files, retries network errors, checks size and zip CRCs
+- [x] Window: **full history, 2013Q2–2026Q2** (45 archives, ~35 GB zipped). Older models add failures, late-life wear-out data and a longer backtest; left truncation is still handled for drives already aged at first sighting
+- [ ] Download the full history into `data/raw/` (zips kept as the raw copy)
+- [ ] Convert to Parquet (`bb-convert`), one archive at a time: extract CSVs to a temp folder, write one Parquet file per archive with all columns, delete the CSVs. Peak temp use ~13 GB; expected total on disk ~50–65 GB (zips + Parquet)
+- [ ] Handle column drift: SMART columns and fields like `datacenter` were added over time. Each Parquet file keeps its own columns; DuckDB aligns them by name (`union_by_name`)
 - [ ] Build a **drive lifecycle table**, one row per serial number: model, capacity, first/last seen, entry age (SMART 9, power-on hours, at first sighting), failed flag, age at failure or at censoring
 - [ ] Data-quality audit: serials that disappear without failing, failures followed by reappearance, power-on-hours resets or implausible values, drive models with too few drives
 - **Gate:** list of drive models with enough data (e.g. ≥ 1,000 drives and ≥ 20 failures). Others enter only through pooling

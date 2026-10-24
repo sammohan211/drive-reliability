@@ -21,7 +21,8 @@ Phase 0: data ingestion. See [docs/PLAN.md](docs/PLAN.md).
 
 ```bash
 uv sync
-uv run bb-download 2023Q1 2026Q2   # ~1 GB per quarter, into data/raw/
+uv run bb-download 2013Q2 2026Q2   # full history, ~35 GB of zips into data/raw/
+uv run bb-convert                  # one Parquet file per archive into data/parquet/
 uv run pytest
 ```
 
