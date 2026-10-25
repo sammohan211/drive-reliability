@@ -47,6 +47,7 @@ def extract_csvs(archive: Path, dest: Path) -> list[Path]:
 
 
 def column_type(name: str) -> str:
+    """Return the DuckDB type for a column: from FIXED_TYPES, DOUBLE for smart_*, else VARCHAR."""
     if name in FIXED_TYPES:
         return FIXED_TYPES[name]
     return "DOUBLE" if name.startswith("smart_") else "VARCHAR"
