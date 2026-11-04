@@ -26,6 +26,11 @@ uv run bb-convert                  # one Parquet file per archive into data/parq
 uv run pytest
 ```
 
+## Background
+
+- [docs/HDD_BASICS.md](docs/HDD_BASICS.md): how a hard drive works and how that maps to failure patterns.
+- [docs/SMART.md](docs/SMART.md): SMART attributes, how Backblaze records them, and caveats for modeling.
+
 ## Reading
 
 - **Meeker, Escobar & Pascual, *Statistical Methods for Reliability Data*** (2nd ed., Wiley, 2021). Main reference: Weibull models, censoring and truncation, field data, failure prediction, Bayesian reliability. Phases 1–4.
